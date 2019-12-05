@@ -1,1 +1,1 @@
-# scalable-NIDS
+# NIDS

@@ -638,44 +638,6 @@ def test_withoutnd(model,data,label):
     return list_unknown_data_label, list_unknown_data_pred
 
 
-# test the known and unknown data
-def test_known_unknown_data(model,centroids,max_threshold,data,label,N_class):
-    novelty = 0
-    correct = 0
-    all_y_pred = []
-    all_y_label = []
-    model.eval()
-    test_loader = get_source_loader(data, label)
-    len_test_dataset = len(test_loader.dataset)
-    # txt_file = open(unknown_centroid_filename, 'ab')
-    for data_test, label_test in test_loader:
-        data_test, label_test = Variable(data_test).float().to(device), Variable(label_test).type(torch.LongTensor).to(
-            device)
-        test_av, test_pred, _, _ = model(data_test, data_test)
-        pred = test_pred.max(1)[1]
-        # np.savetxt(txt_file, test_av.cpu().detach().numpy(), fmt=['%.4f', '%.4f', '%.4f'], delimiter=',')
-        dist_to_its_centriod, min_dist_class_index = cal_min_dis_to_centroid(pred=test_av.cpu(), centroid=centroids)
-        # np.savetxt(unknown_data_filename, dist_to_its_centriod.detach().numpy(), fmt=['%.4f'], delimiter=',')
-        for i in range(dist_to_its_centriod.size(0)):
-            if dist_to_its_centriod[i] > max_threshold[min_dist_class_index[i]]:
-                pred[i] = N_class
-                novelty += 1
-            else:
-                pred[i] = min_dist_class_index[i]
-                novelty += 0
-        all_y_pred.append(pred.cpu().detach().data.tolist())
-        all_y_label.append(label_test.cpu().detach().data.tolist())
-        # correct += pred.eq(label_test.data.view_as(pred)).cpu().sum()
-    # txt_file.close()
-    # Novelty_accuracy = 100. * correct.type(torch.FloatTensor) / len_test_dataset
-    TN_Accuracy = 100. * novelty / len_test_dataset
-    print('test_novelty Train Epoch:{}\tTN_Accuracy: {:.4f}'.format(epoch, TN_Accuracy))
-    logging.info('test_novelty Train Epoch:{}\tTN_Accuracy: {:.4f}'.format(epoch, TN_Accuracy))
-    print(classification_report(list(flatten(all_y_label)), list(flatten(all_y_pred))))
-
-
-
-
 # pretrain model using ours method
 def train_pre(epoch,model,data,label):
     optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=momentum, weight_decay=l2_decay)

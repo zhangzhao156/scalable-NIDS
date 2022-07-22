@@ -1,10 +1,6 @@
 import torch
 
 
-
-
-
-
 class CNN_NORMAL(torch.nn.Module):
     """docstring for CNN_NORMAL"""
     def __init__(self, N_class=4):

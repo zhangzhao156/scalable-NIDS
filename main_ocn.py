@@ -653,9 +653,10 @@ def train_pre(epoch,model,data,label):
         data_train, label_train = iter_train.next()
         data_train, label_train = Variable(data_train).float().to(device),Variable(label_train).type(torch.LongTensor).to(device)
         optimizer.zero_grad()
-        # train_av, train_pred, _, _ = model(data_train,data_train)
+        # OCN
+        train_av, train_pred, _, _ = model(data_train,data_train)
         # CNN_LSTM
-        train_pred = model(data_train)
+        # train_pred = model(data_train)
         # print('train pred',train_pred.size())
         # print(train_pred)
         Loss = loss(train_pred, label_train)
